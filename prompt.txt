@@ -1,0 +1,262 @@
+Got it. You want a **Trust Wallet–like web clone**, **mobile-responsive**, **demo-only (no real blockchain transactions)**, with **live market prices**, **simulated gas fees & networks**, and **10 demo users**, where **one user has a predefined USDT balance** — all built using **GitHub Copilot** to speed up development.
+
+Below is a **clear, practical blueprint** you can directly follow and feed into Copilot step-by-step.
+
+---
+
+## 1. Scope Clarification (What you are building)
+
+✅ **This is NOT a real crypto wallet**
+✅ **No private keys / no real transactions**
+✅ **Purely educational / demo product**
+
+What WILL work:
+
+* UI similar to Trust Wallet (mobile-first)
+* Market prices (real-time)
+* Wallet balances (mocked but realistic)
+* Gas fees & network selection (simulated)
+* Swap / Send / Receive flows (demo)
+* Multiple users with separate wallets
+
+---
+
+## 2. Recommended Tech Stack (Web + Copilot friendly)
+
+### Frontend
+
+* **Next.js (React)** – best for SEO + responsiveness
+* **Tailwind CSS** – fast mobile UI like Trust Wallet
+* **Chart.js / Recharts** – price charts
+* **Axios / Fetch** – market data
+
+### Backend (Mock Blockchain Layer)
+
+* **Node.js + Express**
+* **MongoDB / PostgreSQL**
+* **JWT Authentication**
+* **In-memory or DB-based ledger**
+
+### APIs (Market Prices)
+
+* **CoinGecko API** (FREE, no API key)
+
+  * Prices
+  * Market cap
+  * 24h change
+
+---
+
+## 3. Folder Structure (Clean & Scalable)
+
+```
+trust-wallet-clone/
+│
+├── frontend/
+│   ├── pages/
+│   │   ├── index.tsx          // Wallet home
+│   │   ├── login.tsx
+│   │   ├── send.tsx
+│   │   ├── swap.tsx
+│   │   └── market.tsx
+│   ├── components/
+│   │   ├── WalletHeader.tsx
+│   │   ├── BalanceCard.tsx
+│   │   ├── ActionButtons.tsx
+│   │   ├── TokenList.tsx
+│   │   └── GasFeeModal.tsx
+│   └── styles/
+│
+├── backend/
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── wallet.js
+│   │   ├── market.js
+│   │   └── transaction.js
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Wallet.js
+│   │   └── Transaction.js
+│   └── server.js
+│
+└── README.md
+```
+
+---
+
+## 4. User System (10 Demo Users)
+
+### User Model
+
+```js
+User {
+  userId: "user01",
+  email: "user01@demo.com",
+  password: "hashed",
+  walletId: "wallet01"
+}
+```
+
+### Wallet Model
+
+```js
+Wallet {
+  walletId: "wallet01",
+  balances: {
+    USDT: 5000,
+    BTC: 0.02,
+    ETH: 1.5
+  }
+}
+```
+
+### Requirement You Asked
+
+✅ **One user must have a specific USDT balance**
+
+Example:
+
+```js
+user01 → USDT = 10,000
+user02–user10 → random balances
+```
+
+Seed this directly in your database or JSON seed file.
+
+---
+
+## 5. Market Prices (REAL, but safe)
+
+Use **CoinGecko API**:
+
+```http
+https://api.coingecko.com/api/v3/simple/price
+?ids=bitcoin,ethereum,tether
+&vs_currencies=usd
+```
+
+This gives:
+
+* Live prices
+* 24h change
+* No transactions involved
+
+---
+
+## 6. Gas Fee & Network Simulation (IMPORTANT)
+
+### Supported Networks (Demo)
+
+* Ethereum
+* BNB Chain
+* Polygon
+
+### Gas Fee Logic (Fake but Realistic)
+
+```js
+Ethereum: $3 – $15
+BNB: $0.20 – $1
+Polygon: $0.01 – $0.10
+```
+
+### UI Flow
+
+1. User clicks **Send**
+2. Select token
+3. Select network
+4. Show:
+
+   * Gas fee
+   * Estimated time
+   * Network name
+5. Confirm → **Mock transaction success**
+
+No blockchain call happens.
+
+---
+
+## 7. Transaction Simulation Logic
+
+```js
+Transaction {
+  fromWallet: "wallet01",
+  toAddress: "0xDEMO...",
+  token: "USDT",
+  amount: 50,
+  network: "Ethereum",
+  gasFee: 5.25,
+  status: "Success",
+  timestamp: Date
+}
+```
+
+Balances update **only in DB**, not on-chain.
+
+---
+
+## 8. Pages You MUST Build (Minimum Viable Demo)
+
+### Home (Wallet)
+
+* Total balance (USD)
+* Token list
+* Send / Swap / Sell / Earn buttons
+
+### Send Page
+
+* Token dropdown
+* Amount input
+* Network selector
+* Gas fee preview
+
+### Swap Page
+
+* Token A → Token B
+* Slippage (fake)
+* Estimated output
+
+### Market Page
+
+* Live prices
+* 24h % change
+* Charts
+
+---
+
+## 9. Mobile-Responsive UI Rules (Very Important)
+
+Use **Tailwind breakpoints**:
+
+```css
+sm: mobile
+md: tablet
+lg: desktop
+```
+
+Design **mobile first**, desktop is optional.
+
+Your uploaded UI already matches this well.
+
+---
+
+## 10. How to Use GitHub Copilot Effectively (KEY)
+
+Instead of writing full code, use **precise prompts**:
+
+### Example Prompt
+
+```txt
+Create a mobile-first wallet home page UI similar to Trust Wallet
+with balance display, action buttons (Send, Fund, Swap, Sell, Earn)
+using React and Tailwind CSS.
+```
+
+### Backend Prompt
+
+```txt
+Create an Express API route that returns wallet balances
+for a logged-in user from MongoDB.
+```
+
+
+
