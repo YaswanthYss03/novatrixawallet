@@ -70,8 +70,9 @@ git push -u origin main
    ```
    Framework Preset: Next.js
    Root Directory: frontend
-   Build Command: npm install && npm run build
-   Output Directory: .next
+   Build Command: (leave empty - auto-detected)
+   Output Directory: (leave empty - auto-detected)
+   Install Command: npm install
    ```
 
 5. **Add Environment Variable:**

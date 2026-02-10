@@ -31,7 +31,11 @@ const transactionSchema = new mongoose.Schema({
   status: {
     type: String,
     default: 'Success',
-    enum: ['Success', 'Pending', 'Failed']
+    enum: ['Success', 'Pending', 'Failed', 'Processing']
+  },
+  isExternal: {
+    type: Boolean,
+    default: false
   },
   transactionHash: {
     type: String,

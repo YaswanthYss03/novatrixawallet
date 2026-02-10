@@ -1,12 +1,8 @@
 {
-  "name": "trust-wallet-clone",
+  "name": "nova-trixa-wallet",
   "version": "1.0.0",
-  "description": "Trust Wallet Demo Clone - Educational purposes only",
+  "description": "Nova Trixa Wallet - Crypto wallet application",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",

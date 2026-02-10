@@ -21,22 +21,29 @@ router.post('/send', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Insufficient balance (including gas fee)' });
     }
 
-    // Deduct amount + gas fee from sender
-    senderWallet.balances[token] -= totalRequired;
-    await senderWallet.save();
-
-    // Try to find receiver wallet and credit them
+    // Try to find receiver wallet to determine if internal or external
     const receiverWallet = await Wallet.findOne({ walletAddress: toAddress });
     let receiverCredited = false;
+    let transactionStatus = 'Processing'; // Default to processing for external addresses
+    let isExternal = true;
     
     if (receiverWallet) {
-      // Receiver is a demo user - credit their balance
+      // Internal transaction: Deduct from sender and credit receiver immediately
+      senderWallet.balances[token] -= totalRequired;
+      await senderWallet.save();
+
+      // Credit receiver's balance
       if (!receiverWallet.balances[token]) {
         receiverWallet.balances[token] = 0;
       }
       receiverWallet.balances[token] += parseFloat(amount);
       await receiverWallet.save();
       receiverCredited = true;
+      transactionStatus = 'Success';
+      isExternal = false;
+    } else {
+      // External transaction: Don't deduct balance yet - wait for admin approval
+      // Balance will be deducted when admin marks transaction as "Success"
     }
 
     // Create transaction hash
@@ -50,9 +57,10 @@ router.post('/send', auth, async (req, res) => {
       amount: parseFloat(amount),
       network,
       gasFee: parseFloat(gasFee),
-      status: 'Success',
+      status: transactionStatus,
       transactionHash,
-      type: 'send'
+      type: 'send',
+      isExternal
     });
     await senderTransaction.save();
 
@@ -73,11 +81,12 @@ router.post('/send', auth, async (req, res) => {
     }
 
     res.json({
-      msg: 'Transaction successful',
+      msg: isExternal ? 'External transaction initiated - processing' : 'Transaction successful',
       transaction: {
         hash: transactionHash,
-        status: 'Success',
+        status: transactionStatus,
         amount,
+        isExternal,
         token,
         network,
         gasFee,

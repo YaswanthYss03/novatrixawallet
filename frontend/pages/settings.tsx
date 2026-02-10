@@ -38,16 +38,9 @@ export default function Settings() {
     {
       title: 'Account',
       items: [
-        { label: 'Profile', icon: User, onClick: () => alert('Profile settings') },
-        { label: 'Security', icon: Shield, onClick: () => alert('Security settings') },
-        { label: 'Notifications', icon: Bell, onClick: () => alert('Notification settings') },
-      ],
-    },
-    {
-      title: 'Preferences',
-      items: [
-        { label: 'Language', icon: Globe, value: 'English', onClick: () => alert('Language settings') },
-        { label: 'Theme', icon: Moon, value: 'Dark', onClick: () => alert('Theme settings') },
+        { label: 'Profile', icon: User, onClick: () => router.push('/profile/edit') },
+        { label: 'Security', icon: Shield, onClick: () => router.push('/security') },
+        { label: 'Notifications', icon: Bell, onClick: () => router.push('/notifications') },
       ],
     },
   ];

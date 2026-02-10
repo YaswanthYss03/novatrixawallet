@@ -159,8 +159,26 @@ export default function Send() {
         gasFee: selectedNetwork.gasFee,
       });
 
-      alert(`✅ Transaction successful!\nHash: ${response.data.transaction.hash}`);
-      router.push('/');
+      const transactionData = response.data.transaction;
+      
+      // Check if external transaction (Processing status)
+      if (transactionData.isExternal || transactionData.status === 'Processing') {
+        // Redirect to processing page
+        router.push({
+          pathname: '/processing',
+          query: {
+            hash: transactionData.hash,
+            amount: amountNum,
+            token: selectedToken.symbol,
+            to: toAddress,
+            status: transactionData.status
+          }
+        });
+      } else {
+        // Internal transaction - show success and go home
+        alert(`✅ Transaction successful!\nHash: ${transactionData.hash}`);
+        router.push('/');
+      }
     } catch (error: any) {
       alert(error.response?.data?.msg || 'Transaction failed');
       setLoading(false);

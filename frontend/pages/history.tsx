@@ -115,9 +115,7 @@ export default function History() {
               <div
                 key={tx._id}
                 className="bg-card border border-gray-700 rounded-xl p-4 card-hover cursor-pointer"
-                onClick={() => {
-                  alert(`Transaction Details\n\nHash: ${tx.transactionHash}\nStatus: ${tx.status}\nNetwork: ${tx.network}\nGas Fee: $${tx.gasFee}`);
-                }}
+                onClick={() => router.push(`/transaction/${tx._id}`)}
               >
                 <div className="flex items-center gap-3">
                   {/* Icon */}

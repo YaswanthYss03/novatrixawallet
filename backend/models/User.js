@@ -15,6 +15,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  name: {
+    type: String,
+    default: ''
+  },
+  mobile: {
+    type: String,
+    default: ''
+  },
+  notificationSettings: {
+    pushNotifications: { type: Boolean, default: true },
+    emailNotifications: { type: Boolean, default: true },
+    priceAlerts: { type: Boolean, default: true },
+    transactionAlerts: { type: Boolean, default: true },
+    marketUpdates: { type: Boolean, default: false }
+  },
   walletId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Wallet'
