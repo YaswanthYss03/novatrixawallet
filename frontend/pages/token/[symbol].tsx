@@ -36,7 +36,6 @@ export default function TokenDetail() {
   const [balance, setBalance] = useState<number>(0);
   const [timeframe, setTimeframe] = useState('1D');
   const [activeTab, setActiveTab] = useState('Holdings');
-  const [buyAmount, setBuyAmount] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [chartData, setChartData] = useState<any>(null);
   const [loadingChart, setLoadingChart] = useState(false);
@@ -211,16 +210,6 @@ export default function TokenDetail() {
     },
   };
 
-  const handleBuy = () => {
-    if (!buyAmount || parseFloat(buyAmount) <= 0) {
-      alert('Please enter a valid amount');
-      return;
-    }
-    router.push('/swap');
-  };
-
-  const quickAmounts = ['1800', '2700', '5400', '9100'];
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -325,50 +314,7 @@ export default function TokenDetail() {
         </div>
       </div>
 
-      {/* Buy Now Section */}
-      <div className="px-4 mb-6">
-        <h3 className="text-white font-semibold mb-3 text-base">Buy now</h3>
-        <div className="bg-card border border-gray-700 rounded-2xl p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1">
-              <input
-                type="number"
-                value={buyAmount}
-                onChange={(e) => setBuyAmount(e.target.value)}
-                placeholder="3,625"
-                className="bg-transparent text-white text-4xl font-bold focus:outline-none w-full"
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-text-secondary text-base font-medium">INR</span>
-              <button
-                onClick={handleBuy}
-                className="bg-primary text-black px-8 py-3.5 rounded-xl font-bold hover:bg-primary/90 transition-all duration-200 shadow-lg hover:shadow-primary/30"
-              >
-                Buy
-              </button>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-4 gap-2 mb-4">
-            {quickAmounts.map((amount) => (
-              <button
-                key={amount}
-                onClick={() => setBuyAmount(amount)}
-                className="bg-green-900/20 text-primary py-2.5 rounded-lg text-sm font-bold border border-green-700/40 hover:bg-green-900/40 hover:border-green-600/60 transition-all duration-200"
-              >
-                {amount}
-              </button>
-            ))}
-          </div>
-          
-          <p className="text-text-secondary text-xs leading-relaxed">
-            Buying {buyAmount ? (parseFloat(buyAmount) / tokenData.price).toFixed(8) : '0.00000000'} {tokenData.symbol} • Binance Connect
-          </p>
-        </div>
-      </div>
-
-      {/* Tabs */}
+      
       <div className="px-4 mb-6">
         <div className="flex gap-6 border-b border-gray-800">
           {['Holdings', 'History', 'About', 'Insights'].map((tab) => (
@@ -462,7 +408,6 @@ export default function TokenDetail() {
             { label: 'Send', icon: '↗', onClick: () => router.push('/send') },
             { label: 'Receive', icon: '↓', onClick: () => router.push('/receive') },
             { label: 'Swap', icon: '⇄', onClick: () => router.push('/swap') },
-            { label: 'Buy', icon: '🛒', onClick: () => handleBuy() },
             { label: 'Sell', icon: '🏛', onClick: () => router.push('/swap') },
           ].map((action) => (
             <button
@@ -471,13 +416,9 @@ export default function TokenDetail() {
               className="flex flex-col items-center gap-2 group"
             >
               <div
-                className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 ${
-                  action.label === 'Buy' 
-                    ? 'bg-primary shadow-lg shadow-primary/30 group-hover:shadow-primary/50' 
-                    : 'bg-gray-800 group-hover:bg-gray-700'
-                }`}
+                className="w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 bg-gray-800 group-hover:bg-gray-700"
               >
-                <span className={`text-xl ${action.label === 'Buy' ? 'text-black' : 'text-white'}`}>
+                <span className="text-xl text-white">
                   {action.icon}
                 </span>
               </div>
