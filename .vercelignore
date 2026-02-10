@@ -2,7 +2,3 @@ backend
 node_modules
 *.md
 prompt.txt
-.git
-.gitignore
-package.json
-package-lock.json
