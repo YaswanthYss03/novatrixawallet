@@ -11,7 +11,12 @@ const auth = require('../middleware/auth');
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, mobile } = req.body;
+
+    // Validate input
+    if (!mobile || mobile.trim().length === 0) {
+      return res.status(400).json({ msg: 'Mobile number is required' });
+    }
 
     // Check if user exists
     let user = await User.findOne({ email });
@@ -31,7 +36,8 @@ router.post('/register', async (req, res) => {
     user = new User({
       userId,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      mobile: mobile.trim()
     });
 
     // Create wallet for user

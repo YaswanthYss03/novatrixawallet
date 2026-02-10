@@ -8,7 +8,13 @@ const User = require('../models/User');
 // @access  Private
 router.get('/profile', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    console.log('Fetching profile for user ID:', req.user.id);
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      console.log('User not found with ID:', req.user.id);
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    console.log('User found:', { userId: user.userId, email: user.email, mobile: user.mobile });
     res.json(user);
   } catch (err) {
     console.error('Get profile error:', err);
@@ -28,13 +34,27 @@ router.put('/profile', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Name is required' });
     }
 
+    // Get current user
+    const currentUser = await User.findById(req.user.id);
+    
+    if (!currentUser) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+    
+    // Prepare update object
+    const updateData = { name: name.trim() };
+    
+    // Only allow mobile update if user doesn't have one yet
+    if (!currentUser.mobile || currentUser.mobile === '') {
+      if (mobile && mobile.trim().length > 0) {
+        updateData.mobile = mobile.trim();
+      }
+    }
+
     // Update user
     const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { 
-        name: name.trim(),
-        mobile: mobile?.trim() || ''
-      },
+      req.user.id,
+      updateData,
       { new: true }
     ).select('-password');
 

@@ -18,6 +18,8 @@ export default function EditProfile() {
     email: ''
   });
 
+  const [hasMobile, setHasMobile] = useState(false);
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -30,18 +32,33 @@ export default function EditProfile() {
         return;
       }
 
+      console.log('Fetching profile with token...');
       const res = await axios.get(`${API_URL}/user/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 'x-auth-token': token }
       });
 
-      setFormData({
-        name: res.data.name || '',
-        mobile: res.data.mobile || '',
-        email: res.data.email || ''
-      });
+      console.log('Profile response:', res.data);
+
+      // Add safety checks for response data
+      if (res.data) {
+        setFormData({
+          name: res.data.name || '',
+          mobile: res.data.mobile || '',
+          email: res.data.email || ''
+        });
+        setHasMobile(res.data.mobile && res.data.mobile.trim().length > 0);
+      }
       setLoading(false);
     } catch (err: any) {
       console.error('Fetch profile error:', err);
+      
+      // Handle authentication errors
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        router.push('/login');
+        return;
+      }
+      
       setError('Failed to load profile');
       setLoading(false);
     }
@@ -62,7 +79,7 @@ export default function EditProfile() {
           mobile: formData.mobile
         },
         {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { 'x-auth-token': token }
         }
       );
 
@@ -141,7 +158,8 @@ export default function EditProfile() {
                 type="email"
                 value={formData.email}
                 disabled
-                className="flex-1 bg-transparent text-gray-500 outline-none"
+                placeholder="Loading email..."
+                className="flex-1 bg-transparent text-white outline-none"
               />
             </div>
             <p className="text-xs text-text-secondary mt-1">Email cannot be changed</p>
@@ -169,19 +187,27 @@ export default function EditProfile() {
           {/* Mobile */}
           <div>
             <label className="block text-text-secondary text-sm mb-2">
-              Mobile Number
+              Mobile Number {!hasMobile && '*'}
             </label>
-            <div className="bg-card border border-gray-700 rounded-xl px-4 py-4 flex items-center gap-3 focus-within:border-primary">
+            <div className={`bg-card border border-gray-700 rounded-xl px-4 py-4 flex items-center gap-3 ${!hasMobile ? 'focus-within:border-primary' : ''}`}>
               <Phone className="w-5 h-5 text-text-secondary" />
               <input
                 type="tel"
                 name="mobile"
                 value={formData.mobile}
                 onChange={handleChange}
-                placeholder="Enter your mobile number"
-                className="flex-1 bg-transparent text-white outline-none placeholder-text-secondary"
+                placeholder={hasMobile ? "" : "Enter your mobile number"}
+                disabled={hasMobile}
+                required={!hasMobile}
+                className={`flex-1 bg-transparent ${hasMobile ? 'text-gray-500' : 'text-white'} outline-none placeholder-text-secondary`}
               />
             </div>
+            {hasMobile && (
+              <p className="text-xs text-text-secondary mt-1">Mobile number cannot be changed</p>
+            )}
+            {!hasMobile && (
+              <p className="text-xs text-yellow-500 mt-1">Please add your mobile number (required)</p>
+            )}
           </div>
 
           {/* Submit Button */}

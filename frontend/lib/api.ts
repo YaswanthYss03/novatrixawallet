@@ -22,8 +22,8 @@ api.interceptors.request.use((config) => {
 export const authAPI = {
   login: (email: string, password: string) =>
     api.post('/auth/login', { email, password }),
-  register: (email: string, password: string) =>
-    api.post('/auth/register', { email, password }),
+  register: (email: string, password: string, mobile: string) =>
+    api.post('/auth/register', { email, password, mobile }),
 };
 
 // Wallet API
