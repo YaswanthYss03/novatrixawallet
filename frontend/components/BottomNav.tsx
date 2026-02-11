@@ -6,7 +6,7 @@ export default function BottomNav() {
   const currentPath = router.pathname;
 
   const navItems = [
-    { label: 'Home', icon: Clock, path: '/', active: true },
+    { label: 'Home', icon: Clock, path: '/dashboard', active: true },
     { label: 'Trending', icon: TrendingUp, path: '/market', active: false },
     { label: 'Trade', icon: Repeat, path: '/swap', active: false },
     { label: 'Rewards', icon: Gift, path: '/rewards', active: false },

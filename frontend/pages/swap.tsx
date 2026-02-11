@@ -177,7 +177,7 @@ export default function Swap() {
       });
 
       alert(`✅ Swap successful!\n${fromAmount} ${fromToken.symbol} → ${toAmount} ${toToken.symbol}`);
-      router.push('/');
+      router.push('/dashboard');
     } catch (error: any) {
       console.error('Swap error:', error);
       const errorMsg = error.response?.data?.msg || 'Swap failed';

@@ -20,7 +20,7 @@ export default function Login() {
       localStorage.setItem('userId', response.data.userId);
       localStorage.setItem('walletAddress', response.data.walletAddress);
       localStorage.setItem('userEmail', email);
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.msg || 'Login failed');
       setLoading(false);

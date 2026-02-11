@@ -92,7 +92,7 @@ export default function Processing() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-4 border-b border-gray-800">
-        <button onClick={() => router.push('/')} className="p-2 hover:bg-card rounded-lg">
+        <button onClick={() => router.push('/dashboard')} className="p-2 hover:bg-card rounded-lg">
           <ArrowLeft className="w-6 h-6 text-white" />
         </button>
         <h1 className="text-white text-lg font-semibold">Transaction Status</h1>
@@ -213,7 +213,7 @@ export default function Processing() {
           </button>
           
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/dashboard')}
             className="w-full bg-card border border-gray-700 text-white font-semibold py-4 rounded-xl hover:bg-gray-800 transition"
           >
             Back to Home

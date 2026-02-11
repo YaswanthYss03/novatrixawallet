@@ -1,284 +1,282 @@
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import WalletHeader from '@/components/WalletHeader';
-import BalanceCard from '@/components/BalanceCard';
-import ActionButtons from '@/components/ActionButtons';
-import BackupBanner from '@/components/BackupBanner';
-import Tabs from '@/components/Tabs';
-import TokenList from '@/components/TokenList';
-import BottomNav from '@/components/BottomNav';
-import { walletAPI, marketAPI } from '@/lib/api';
+import { Shield, Lock, Zap, Globe, CheckCircle, Star, ArrowRight } from 'lucide-react';
 
-interface Token {
-  symbol: string;
-  name: string;
-  balance: number;
-  usdValue: number;
-  change24h: number;
-  icon: string;
-}
-
-export default function Home() {
+export default function Landing() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('Crypto');
-  const [walletData, setWalletData] = useState<any>(null);
-  const [prices, setPrices] = useState<any>(null);
-  const [tokens, setTokens] = useState<Token[]>([]);
-  const [allTokens, setAllTokens] = useState<Token[]>([]);
-  const [totalBalance, setTotalBalance] = useState(0);
 
-  const tokenNames: { [key: string]: string } = {
-    BTC: 'Bitcoin',
-    ETH: 'Ethereum',
-    USDT: 'Tether',
-    BNB: 'BNB',
-    MATIC: 'Polygon',
-  };
-
-  useEffect(() => {
-    // Check if user is logged in
+  const handleLaunchWallet = () => {
     const token = localStorage.getItem('token');
-    if (!token) {
+    if (token) {
+      // Already logged in, go to dashboard
+      router.push('/dashboard');
+    } else {
+      // Not logged in, go to login page
       router.push('/login');
-      return;
-    }
-
-    fetchData();
-  }, []);
-
-  // Update prices every 10 seconds when on Watch tab
-  useEffect(() => {
-    if (activeTab !== 'Watch') return;
-    
-    const interval = setInterval(async () => {
-      try {
-        const pricesResponse = await marketAPI.getPrices();
-        setPrices(pricesResponse.data);
-        
-        // Update allTokens with new prices
-        if (walletData) {
-          const balances = walletData.balances;
-          const pricesData = pricesResponse.data;
-          
-          const updatedAllTokens: Token[] = Object.keys(tokenNames).map((symbol) => {
-            const balance = balances[symbol] || 0;
-            const price = pricesData[symbol]?.usd || 0;
-            const change24h = pricesData[symbol]?.change24h || 0;
-
-            return {
-              symbol,
-              name: tokenNames[symbol],
-              balance,
-              usdValue: balance * price,
-              change24h,
-              icon: '',
-            };
-          });
-          
-          setAllTokens(updatedAllTokens);
-        }
-      } catch (error) {
-        console.error('Error updating prices:', error);
-      }
-    }, 10000); // Update every 10 seconds
-
-    return () => clearInterval(interval);
-  }, [activeTab, walletData]);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch wallet balance and market prices in parallel
-      const [walletResponse, pricesResponse] = await Promise.all([
-        walletAPI.getBalance(),
-        marketAPI.getPrices(),
-      ]);
-
-      setWalletData(walletResponse.data);
-      setPrices(pricesResponse.data);
-
-      // Calculate tokens with USD values
-      const balances = walletResponse.data.balances;
-      const pricesData = pricesResponse.data;
-
-      const tokensData: Token[] = Object.keys(balances).map((symbol) => {
-        const balance = balances[symbol];
-        const price = pricesData[symbol]?.usd || 0;
-        const change24h = pricesData[symbol]?.change24h || 0;
-
-        return {
-          symbol,
-          name: tokenNames[symbol],
-          balance,
-          usdValue: balance * price,
-          change24h,
-          icon: '',
-        };
-      });
-
-      // Create all tokens array for Prediction and Watch tabs
-      const allTokensData: Token[] = Object.keys(tokenNames).map((symbol) => {
-        const balance = balances[symbol] || 0;
-        const price = pricesData[symbol]?.usd || 0;
-        const change24h = pricesData[symbol]?.change24h || 0;
-
-        return {
-          symbol,
-          name: tokenNames[symbol],
-          balance,
-          usdValue: balance * price,
-          change24h,
-          icon: '',
-        };
-      });
-
-      // Filter out tokens with zero balance for Crypto tab
-      const nonZeroTokens = tokensData.filter((token) => token.balance > 0);
-      
-      setTokens(nonZeroTokens);
-      setAllTokens(allTokensData);
-
-      // Calculate total balance
-      const total = tokensData.reduce((sum, token) => sum + token.usdValue, 0);
-      setTotalBalance(total);
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      // If unauthorized or not found (invalid token), redirect to login
-      const status = (error as any)?.response?.status;
-      if (status === 401 || status === 404) {
-        localStorage.clear(); // Clear all stored data
-        router.push('/login');
-      }
-      setLoading(false);
     }
   };
 
-  const handleTokenClick = (token: Token) => {
-    router.push(`/token/${token.symbol}`);
-  };
+  const features = [
+    {
+      icon: Shield,
+      title: 'Bank-Level Security',
+      description: 'Your assets are protected with military-grade encryption and multi-layer security protocols.'
+    },
+    {
+      icon: Zap,
+      title: 'Lightning Fast',
+      description: 'Experience instant transactions with our optimized blockchain infrastructure worldwide.'
+    },
+    {
+      icon: Lock,
+      title: 'Verified Transfers',
+      description: 'Every external transaction is verified by our security team before processing.'
+    },
+    {
+      icon: Globe,
+      title: 'Multi-Currency Support',
+      description: 'Trade Bitcoin, Ethereum, USDT, BNB, Polygon and more - all in one secure wallet.'
+    }
+  ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  const testimonials = [
+    {
+      name: 'Arjun Krishnan',
+      role: 'Crypto Investor',
+      image: '👩‍💼',
+      rating: 5,
+      text: 'The security features are outstanding! I feel completely safe storing my crypto here. The Verified Transfers feature gives me peace of mind.'
+    },
+    {
+      name: 'Vikram Singh',
+      role: 'Day Trader',
+      image: '👨‍💻',
+      rating: 5,
+      text: 'Best wallet I\'ve used. Transactions are instant, the interface is clean, and the real-time price tracking helps me make quick decisions.'
+    },
+    {
+      name: 'Priya Ramachandran',
+      role: 'Business Owner',
+      image: '👩‍🦰',
+      rating: 5,
+      text: 'Finally, a wallet that prioritizes security without compromising on speed. The 99.9% success rate speaks for itself!'
+    }
+  ];
+
+  const stats = [
+    { value: '99.9%', label: 'Success Rate' },
+    { value: '50K+', label: 'Active Users' },
+    { value: '$2B+', label: 'Secured Assets' },
+    { value: '24/7', label: 'Support' }
+  ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <WalletHeader
-        walletAddress={walletData?.walletAddress || '0x...'}
-      />
-
-      <BalanceCard totalBalance={totalBalance} />
-
-      <ActionButtons
-        onSend={() => router.push('/send')}
-        onFund={() => router.push('/receive')}
-        onSwap={() => router.push('/swap')}
-        onSell={() => router.push('/history')}
-        onEarn={() => router.push('/earn')}
-      />
-
-      <BackupBanner />
-
-      <Tabs activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {activeTab === 'Crypto' && (
-        tokens.length > 0 ? (
-          <TokenList tokens={tokens} onTokenClick={handleTokenClick} />
-        ) : (
-          <div className="text-center py-12">
-            <button
-              onClick={() => router.push('/receive')}
-              className="bg-primary text-black px-8 py-3 rounded-full font-semibold mb-4"
-            >
-              Fund your wallet
-            </button>
-            <p className="text-text-secondary text-sm">
-              💎 Deposit from Binance available
-            </p>
+    <div className="min-h-screen bg-gradient-to-b from-background via-gray-900 to-background">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-purple-500/10"></div>
+        
+        {/* Navigation */}
+        <nav className="relative z-10 flex items-center justify-between px-6 py-6">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Novatrixa Logo" className="w-12 h-12 rounded-full" />
+            <span className="text-white text-2xl font-bold">Novatrixa</span>
           </div>
-        )
-      )}
+          <button
+            onClick={handleLaunchWallet}
+            className="text-primary hover:text-primary/80 font-semibold"
+          >
+            Sign In
+          </button>
+        </nav>
 
-      {activeTab === 'Prediction' && (
-        <div className="px-4 pb-24">
-          <p className="text-text-secondary text-sm mb-4">AI-powered price predictions for the next 24 hours</p>
-          {allTokens.map((token) => {
-            const prediction = token.change24h + (Math.random() * 10 - 5);
-            const confidence = 60 + Math.random() * 30;
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            Your Crypto,
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-500">
+              Secured & Simple
+            </span>
+          </h1>
+          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            Experience the most secure and user-friendly cryptocurrency wallet. Trade, swap, and manage your digital assets with confidence.
+          </p>
+          
+          <button
+            onClick={handleLaunchWallet}
+            className="bg-primary text-black px-10 py-5 rounded-full text-lg font-bold hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/30 hover:shadow-primary/50 inline-flex items-center gap-3 group"
+          >
+            Launch Wallet
+            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </button>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 max-w-4xl mx-auto">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-4xl font-bold text-primary mb-2">{stat.value}</div>
+                <div className="text-gray-400 text-sm">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <h2 className="text-4xl font-bold text-white text-center mb-4">
+          Why Choose Novatrixa?
+        </h2>
+        <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+          Built with cutting-edge technology and designed for both beginners and professionals
+        </p>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature) => {
+            const Icon = feature.icon;
             return (
-              <button
-                key={token.symbol}
-                onClick={() => handleTokenClick(token)}
-                className="w-full flex items-center justify-between py-4 border-b border-gray-800 card-hover text-left"
+              <div
+                key={feature.title}
+                className="bg-card border border-gray-800 rounded-2xl p-6 hover:border-primary/50 transition-all duration-300 group"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-xl">
-                    {token.symbol === 'BTC' ? '₿' : token.symbol === 'ETH' ? 'Ξ' : token.symbol === 'USDT' ? '₮' : token.symbol === 'BNB' ? '💎' : '⬡'}
-                  </div>
-                  <div className="text-left">
-                    <p className="text-white font-semibold">{token.symbol}</p>
-                    <p className="text-text-secondary text-sm">{token.name}</p>
-                  </div>
+                <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <Icon className="w-7 h-7 text-primary" />
                 </div>
-
-                <div className="text-right">
-                  <p className={`text-lg font-semibold ${prediction >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {prediction >= 0 ? '+' : ''}{prediction.toFixed(2)}%
-                  </p>
-                  <p className="text-text-secondary text-xs">
-                    {confidence.toFixed(0)}% confidence
-                  </p>
-                </div>
-              </button>
+                <h3 className="text-white font-bold text-lg mb-2">{feature.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
+              </div>
             );
           })}
         </div>
-      )}
+      </div>
 
-      {activeTab === 'Watch' && (
-        <div className="px-4 pb-24">
-          <p className="text-text-secondary text-sm mb-4">Real-time market prices</p>
-          {allTokens.map((token) => {
-            const currentPrice = prices?.[token.symbol]?.usd || 0;
-            return (
-              <button
-                key={token.symbol}
-                onClick={() => handleTokenClick(token)}
-                className="w-full flex items-center justify-between py-4 border-b border-gray-800 card-hover text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-xl">
-                    {token.symbol === 'BTC' ? '₿' : token.symbol === 'ETH' ? 'Ξ' : token.symbol === 'USDT' ? '₮' : token.symbol === 'BNB' ? '💎' : '⬡'}
+      {/* Security Section */}
+      <div className="bg-gradient-to-r from-primary/5 to-purple-500/5 py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-4xl font-bold text-white mb-6">
+                Security You Can Trust
+              </h2>
+              <div className="space-y-4">
+                {[
+                  'End-to-end encryption for all transactions',
+                  'Multi-signature wallet protection',
+                  'Real-time fraud detection system',
+                  'Admin verification for external transfers',
+                  'Cold storage for maximum security',
+                  '24/7 security monitoring'
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3">
+                    <CheckCircle className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-300">{item}</span>
                   </div>
-                  <div className="text-left">
-                    <p className="text-white font-semibold">{token.symbol}</p>
-                    <p className="text-text-secondary text-sm">{token.name}</p>
+                ))}
+              </div>
+            </div>
+            <div className="relative">
+              <div className="bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-3xl p-8 backdrop-blur-sm border border-primary/30">
+                <div className="bg-card rounded-2xl p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Transaction Status</span>
+                    <span className="text-primary text-sm font-semibold">Verified ✓</span>
+                  </div>
+                  <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-primary to-green-500 w-full animate-pulse"></div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-4">
+                    <div>
+                      <div className="text-gray-500 text-xs mb-1">Encryption</div>
+                      <div className="text-white font-semibold">256-bit</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-500 text-xs mb-1">Security Score</div>
+                      <div className="text-primary font-semibold">A+</div>
+                    </div>
                   </div>
                 </div>
-
-                <div className="text-right">
-                  <p className="text-white font-semibold">
-                    ${currentPrice.toLocaleString()}
-                  </p>
-                  <p className={`text-sm ${token.change24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {token.change24h >= 0 ? '+' : ''}{token.change24h.toFixed(2)}%
-                  </p>
-                </div>
-              </button>
-            );
-          })}
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
 
-      <BottomNav />
+      {/* Testimonials Section */}
+      <div className="max-w-6xl mx-auto px-6 py-20">
+        <h2 className="text-4xl font-bold text-white text-center mb-4">
+          Trusted by Thousands
+        </h2>
+        <p className="text-gray-400 text-center mb-16 max-w-2xl mx-auto">
+          See what our users have to say about their experience
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial) => (
+            <div
+              key={testimonial.name}
+              className="bg-card border border-gray-800 rounded-2xl p-6 hover:border-primary/50 transition-all duration-300"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-primary to-purple-500 rounded-full flex items-center justify-center text-2xl">
+                  {testimonial.image}
+                </div>
+                <div>
+                  <div className="text-white font-semibold">{testimonial.name}</div>
+                  <div className="text-gray-500 text-sm">{testimonial.role}</div>
+                </div>
+              </div>
+              <div className="flex gap-1 mb-3">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                ))}
+              </div>
+              <p className="text-gray-300 text-sm leading-relaxed">{testimonial.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="bg-gradient-to-r from-primary/10 to-purple-500/10 py-20">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Ready to Get Started?
+          </h2>
+          <p className="text-xl text-gray-400 mb-10">
+            Join thousands of users who trust Novatrixa for their crypto needs
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => router.push('/signup')}
+              className="bg-primary text-black px-10 py-5 rounded-full text-lg font-bold hover:bg-primary/90 transition-all duration-300 shadow-lg shadow-primary/30"
+            >
+              Create Free Account
+            </button>
+            <button
+              onClick={handleLaunchWallet}
+              className="bg-transparent border-2 border-primary text-primary px-10 py-5 rounded-full text-lg font-bold hover:bg-primary/10 transition-all duration-300"
+            >
+              Sign In
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-800 py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="Novatrixa Logo" className="w-10 h-10 rounded-full" />
+              <span className="text-white text-xl font-bold">Novatrixa Wallet</span>
+            </div>
+            <div className="text-gray-500 text-sm">
+              © 2026 Novatrixa. All rights reserved.
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

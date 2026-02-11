@@ -316,7 +316,7 @@ export default function TransactionDetail() {
           </button>
           
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/dashboard')}
             className="w-full bg-card border border-gray-700 text-white font-semibold py-4 rounded-xl hover:bg-gray-800 transition"
           >
             Back to Home

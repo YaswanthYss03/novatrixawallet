@@ -53,7 +53,7 @@ export default function Signup() {
       localStorage.setItem('userEmail', email);
       
       // Redirect to home
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.msg || 'Registration failed');
       setLoading(false);

@@ -177,7 +177,7 @@ export default function Send() {
       } else {
         // Internal transaction - show success and go home
         alert(`✅ Transaction successful!\nHash: ${transactionData.hash}`);
-        router.push('/');
+        router.push('/dashboard');
       }
     } catch (error: any) {
       alert(error.response?.data?.msg || 'Transaction failed');
